@@ -1,0 +1,2336 @@
+openapi: 3.0.1
+info:
+  title: Catalog API
+  version: '1.0'
+servers:
+  - url: http://localhost:8081
+    description: Generated server url
+security:
+  - accessToken: []
+paths:
+  /v1/user/{userId}/profile:
+    get:
+      tags:
+        - User Profile
+      summary: Get User
+      description: Get user profile
+      operationId: getUserProfile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - User Profile
+      summary: Add/Update User
+      description: Add or update user profile
+      operationId: updateUserProfile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfile'
+        required: true
+      responses:
+        '204':
+          description: NO_CONTENT
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - User Profile
+      summary: Delete User
+      description: Delete user profile
+      operationId: deleteUserProfile
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: NO_CONTENT
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/widgets/{id}:
+    get:
+      tags:
+        - Widget
+      summary: Get widget by Id
+      description: Get widget by id
+      operationId: getWidget_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/WidgetDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Widget
+      summary: Update Widget
+      description: Update widget by id
+      operationId: updateWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WidgetRequest'
+        required: true
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Widget
+      summary: Delete widgets
+      description: Delete widgets
+      operationId: deleteWidgets
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: NO_CONTENT
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/views:
+    get:
+      tags:
+        - View API
+      summary: Get all views
+      description: Get metadata about platform views.
+      operationId: discoverAllViews
+      parameters:
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pageNo
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: sortOrder
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ALL
+            enum:
+              - ALL
+              - PUBLISHED
+              - UNPUBLISHED
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: MODIFIED
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageSRCViewDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - View API
+      summary: Update a view
+      description: Update an existing view using this endpoint
+      operationId: updateViews
+      parameters:
+        - name: viewId
+          in: query
+          description: The view id identifier
+          required: false
+          schema:
+            type: string
+        - name: viewName
+          in: query
+          description: The view name identifier
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewRequest'
+        required: true
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - View API
+      summary: Create a new view
+      description: Create a new view (named query) using this endpoint
+      operationId: createView
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewRequest'
+        required: true
+      responses:
+        '201':
+          description: CREATED
+          content:
+            application/json:
+              schema:
+                type: string
+                format: uuid
+        '400':
+          description: BAD_REQUEST
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - View API
+      summary: Delete a view
+      description: Delete an existing view using this endpoint
+      operationId: deleteView
+      parameters:
+        - name: viewId
+          in: query
+          description: The view id identifier
+          required: false
+          schema:
+            type: string
+        - name: viewName
+          in: query
+          description: The view name identifier
+          required: false
+          schema:
+            type: string
+      responses:
+        '204':
+          description: NO_CONTENT
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards/{id}:
+    get:
+      tags:
+        - Dashboard API
+      summary: Get dashboard by Id
+      description: 'Get dashboard by id '
+      operationId: getDashboardById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Dashboard API
+      summary: Update dashboard
+      description: Updates dashboard by id
+      operationId: updateDashboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardRequest'
+        required: true
+      responses:
+        '204':
+          description: NO_CONTENT
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Dashboard API
+      summary: Delete dashboard
+      description: Delete dashboard by id
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardRequest'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards/{id}/widgets:
+    get:
+      tags:
+        - Dashboard API
+      summary: Get dashboard widgets
+      description: Get dashboard widget list
+      operationId: getDashboardWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardWidgetDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+        - Dashboard API
+      summary: Update DashboardWidget
+      description: Update dashboard widget by dashboard id.
+      operationId: updateDashboardWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DashboardWidgetRequest'
+        required: true
+      responses:
+        '204':
+          description: NO_CONTENT
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Dashboard API
+      summary: Create DashboardWidget
+      description: Create new dashboard widget
+      operationId: addDashboardWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DashboardWidgetRequest'
+        required: true
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - Dashboard API
+      summary: Delete DashboardWidget
+      description: Delete dashboard widget by id.
+      operationId: deleteDashboardWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/widgets:
+    get:
+      tags:
+        - Widget
+      summary: Get All widgets
+      description: Get all widget list
+      operationId: getWidget
+      parameters:
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: viewId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pageNo
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: sortOrder
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ALL
+            enum:
+              - ALL
+              - PUBLISHED
+              - UNPUBLISHED
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: MODIFIED
+        - name: widgetTypeEnum
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - GRAPH
+              - TABLE
+              - MARKDOWNCARD
+              - COUNTERCARD
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageWidgetDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Widget
+      summary: Add widget
+      description: Add a new widget
+      operationId: createWidget
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WidgetRequest'
+        required: true
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/widgets/{slug}/fork:
+    post:
+      tags:
+        - Widget
+      summary: fork widget
+      description: Fork widget
+      operationId: forkWidget
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: string
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/widgets/{id}/publish:
+    post:
+      tags:
+        - Widget
+      summary: Publish widget
+      description: 'Publish widget '
+      operationId: publishWidget
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/views/{viewId}/publish:
+    post:
+      tags:
+        - View API
+      summary: publish view
+      description: Publish view
+      operationId: publishView
+      parameters:
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: CREATED
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/views/{viewId}/fork:
+    post:
+      tags:
+        - View API
+      summary: fork view
+      description: Fork view
+      operationId: forkView
+      parameters:
+        - name: viewId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards:
+    get:
+      tags:
+        - Dashboard API
+      summary: Get dashboard
+      description: Get dashboard list
+      operationId: getDashboard
+      parameters:
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: pageNo
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: sortOrder
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            default: ALL
+            enum:
+              - ALL
+              - PUBLISHED
+              - UNPUBLISHED
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: MODIFIED
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageDashboardDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    post:
+      tags:
+        - Dashboard API
+      summary: Create dashboard
+      description: Create a new dashboard
+      operationId: add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardRequest'
+        required: true
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: string
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards/{slug}/fork:
+    post:
+      tags:
+        - Dashboard API
+      summary: Fork dashboards
+      description: 'Fork a new dashboards '
+      operationId: forkDashboard
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: CREATED
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  type: string
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards/{id}/publish:
+    post:
+      tags:
+        - Dashboard API
+      summary: publish dashboards
+      description: 'Publish  dashboards '
+      operationId: publishDashboard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: slug
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '201':
+          description: OK
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/subscription:
+    get:
+      tags:
+        - Subscription API
+      summary: Get subscription details
+      description: Get details about your subscription
+      operationId: getSubscriptionInfo
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubscriptionInfo'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/subscription/users:
+    get:
+      tags:
+        - Subscription API
+      summary: Get subscription users
+      description: Get a list of users within your subscription
+      operationId: getSubscriptionUsers
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubscriptionUsers'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/state/history:
+    get:
+      tags:
+        - Plateform  State
+      summary: Get QueryHistory by id
+      description: Returns Query for id specified.
+      operationId: getQuery
+      parameters:
+        - name: queryId
+          in: query
+          description: query's unique identifier
+          required: false
+          schema:
+            type: string
+        - name: from
+          in: query
+          description: from date/time filter
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          description: to date/time filter
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: origin
+          in: query
+          description: origin app filter
+          required: false
+          schema:
+            type: string
+        - name: pageNo
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 1
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 10
+        - name: sortOrder
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ASC
+              - DESC
+        - name: sortBy
+          in: query
+          required: false
+          schema:
+            type: string
+            default: QUERY_ID
+        - name: isRecent
+          in: query
+          description: request to fetch recent records of 15 min
+          required: false
+          schema:
+            type: boolean
+            default: true
+      responses:
+        '404':
+          description: QueryHistory not found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PageQueryHistoryDto'
+  /v1/discover/table:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get tables
+      description: Get table metadata
+      operationId: getTables
+      parameters:
+        - name: scope
+          in: query
+          description: Defines the scope of what resource metadata to return (ALL = all resources, PUBLIC = non-permissioned tables, PRIVATE = tables created by the requesting user)
+          required: true
+          schema:
+            type: string
+            enum:
+              - PRIVATE
+              - PUBLIC
+              - ALL
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCTable'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/table/relations:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get table relationships
+      description: Get table relationship metadata (including table, column, and primary key references) for all tables in a namespace
+      operationId: getTableRelations
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+        - name: scope
+          in: query
+          description: Defines the scope of what resource metadata to return (ALL = all resources, PUBLIC = non-permissioned tables, PRIVATE = tables created by the requesting user)
+          required: true
+          schema:
+            type: string
+            enum:
+              - PRIVATE
+              - PUBLIC
+              - ALL
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TableRelationDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/table/primarykey:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get table primary keys
+      description: Get table primary key metadata
+      operationId: getTablesPrimaryKey
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+            default: PUBLIC
+        - name: table
+          in: query
+          description: The table name for limiting scope
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCTableColumns'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/table/index:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get table indexes
+      description: Get table index metadata
+      operationId: getIndex
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+            default: PUBLIC
+        - name: table
+          in: query
+          description: The table name for limiting scope
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCIndex'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/table/column:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get table columns
+      description: Get table column metadata
+      operationId: getTableColumns
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+            default: PUBLIC
+        - name: table
+          in: query
+          description: The table name for limiting scope
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCTableColumns'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/table/auth-required:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get authorization required
+      description: Determine whether or not biscuit authorization is required for an operation-resource pair
+      operationId: getIsAuthorizationRequired
+      parameters:
+        - name: resourceId
+          in: query
+          description: The requested resource (e.g. ETH.TRANSACTION)
+          required: true
+          schema:
+            type: string
+        - name: operation
+          in: query
+          description: The requested operation (e.g. DELETE)
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: boolean
+  /v1/discover/refs/primarykey:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get primary key references
+      description: Get all primary keys referenced by the provided foreign key
+      operationId: getPrimaryKey
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+            default: PUBLIC
+        - name: table
+          in: query
+          description: The table name for limiting scope
+          required: true
+          schema:
+            type: string
+        - name: column
+          in: query
+          description: The foreign key column identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCForeignKeys'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/refs/foreignkey:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get foreign key references
+      description: Get all foreign keys referencing the provided primary key
+      operationId: getForeignKey
+      parameters:
+        - name: namespace
+          in: query
+          description: The namespace for limiting scope
+          required: true
+          schema:
+            type: string
+            default: PUBLIC
+        - name: table
+          in: query
+          description: The table name for limiting scope
+          required: true
+          schema:
+            type: string
+        - name: column
+          in: query
+          description: The primary key column identifier
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCForeignKeys'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/namespace:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get schemas
+      description: Get schemas metadata
+      operationId: getSchemas
+      parameters:
+        - name: scope
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - PRIVATE
+              - PUBLIC
+              - ALL
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCSchema'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/blockchains:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get blockchain
+      description: Get list of blockchain
+      operationId: getBlockchains
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BlockChainDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/discover/blockchains/{chainId}:
+    get:
+      tags:
+        - Resource Discovery
+      summary: Get namespaces
+      description: Get list of namespaces
+      operationId: getNamespaces
+      parameters:
+        - name: chainId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/NamespacesDto'
+        '400':
+          description: BAD_REQUEST
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/views/{id}:
+    get:
+      tags:
+        - View API
+      summary: Get view by Id
+      description: Get metadata about platform views by id.
+      operationId: discoverViewById
+      parameters:
+        - name: id
+          in: path
+          description: The view name for limiting scope
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SRCView'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: FORBIDDEN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/tag:
+    get:
+      tags:
+        - tag-controller
+      summary: Get Tags
+      description: Returns list of Tags
+      operationId: getAllTags
+      parameters:
+        - name: tagId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: popular
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+        - name: tagType
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TagDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: NOT_FOUND
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /v1/content/dashboards/slug/{slug}:
+    get:
+      tags:
+        - Dashboard API
+      summary: Get dashboard by  slug
+      description: Get dashboard by slug
+      operationId: getDashboardBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: isPublic
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DashboardDto'
+        '401':
+          description: UNAUTHORIZED
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    UserProfile:
+      type: object
+      properties:
+        userId:
+          type: string
+        userName:
+          type: string
+        displayName:
+          type: string
+        emailAddr:
+          type: string
+        bio:
+          type: string
+        settings:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        detail:
+          type: string
+        instance:
+          type: string
+        type:
+          type: string
+    TagRequest:
+      type: object
+      properties:
+        tagId:
+          type: string
+          description: the tag identifier
+        metadata:
+          type: string
+          description: stores additional tag metadata (e.g., HTML color)
+    WidgetRequest:
+      type: object
+      properties:
+        widgetName:
+          type: string
+        widgetType:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: string
+        viewId:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagRequest'
+    ParameterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: containing the view parameter name
+          example: COUNT
+        type:
+          type: string
+          description: containing the view parameter type
+          example: integer
+      description: containing the view parameters
+    ViewRequest:
+      required:
+        - resourceId
+        - viewName
+        - viewText
+      type: object
+      properties:
+        viewName:
+          type: string
+          description: Unique view identifier
+          example: eth_num_blocks_with_txn_cnt
+        viewText:
+          type: string
+          description: containing the view SQL
+          example: SELECT COUNT(*) FROM ETH.BLOCK WHERE TRANSACTION_COUNT > {{COUNT}}
+        resourceId:
+          type: string
+          description: containing the resource identifier
+          example: ETH.BLOCK
+        description:
+          type: string
+          description: containing the view description
+          example: This view returns the number of ethereum blocks that had a transaction count greater than the provided value
+        isPublic:
+          type: boolean
+          description: containing the view publish status
+          example: true
+        schemaId:
+          type: string
+          description: Unique schema identifier
+          example: ETH
+        parametersRequest:
+          type: array
+          description: containing the view parameters
+          items:
+            $ref: '#/components/schemas/ParameterRequest'
+        tags:
+          type: array
+          description: containing the user's tags for the view
+          items:
+            $ref: '#/components/schemas/TagRequest'
+    DashboardRequest:
+      type: object
+      properties:
+        dashName:
+          type: string
+        descriptionTitle:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/TagRequest'
+    DashboardWidgetRequest:
+      type: object
+      properties:
+        widgetId:
+          type: string
+        metadata:
+          type: string
+    SubscriptionInfo:
+      type: object
+      properties:
+        accountName:
+          type: string
+        subscriptionType:
+          type: string
+        active:
+          type: boolean
+        lastPayment:
+          type: string
+    SubscriptionUsers:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: string
+    PageQueryHistoryDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/QueryHistoryDto'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+    Pageable:
+      type: object
+      properties:
+        totalPages:
+          type: integer
+          format: int32
+        number:
+          type: integer
+          format: int32
+        size:
+          type: integer
+          format: int32
+        numberOfElements:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int32
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    QueryHistoryDto:
+      type: object
+      properties:
+        queryId:
+          type: string
+        userId:
+          type: string
+        sqlText:
+          type: string
+        gatewayId:
+          type: string
+        warehouseId:
+          type: string
+        runTime:
+          type: integer
+          format: int32
+        execTime:
+          type: string
+          format: date-time
+        rowCount:
+          type: integer
+          format: int32
+        responseSize:
+          type: integer
+          format: int32
+        errorDetails:
+          type: string
+        origin:
+          type: string
+        metadata:
+          type: string
+        io:
+          type: string
+        cpuSec:
+          type: string
+    SRCTable:
+      type: object
+      properties:
+        table:
+          type: string
+        namespace:
+          type: string
+        publicKey:
+          type: string
+        immutable:
+          type: boolean
+        accessType:
+          type: string
+        encrypted:
+          type: boolean
+        tamperproof:
+          type: boolean
+        lastAnchored:
+          type: string
+          format: date-time
+    TableColumnDto:
+      type: object
+      properties:
+        column:
+          type: string
+        table:
+          type: string
+        namespace:
+          type: string
+        dataType:
+          type: string
+        primaryKeySequence:
+          type: integer
+          format: int32
+        relationship:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableForeignKeyDto'
+    TableForeignKeyDto:
+      type: object
+      properties:
+        table:
+          type: string
+        column:
+          type: string
+        cardinality:
+          type: string
+        namespace:
+          type: string
+    TableRelationDto:
+      type: object
+      properties:
+        table:
+          type: string
+        namespace:
+          type: string
+        publicKey:
+          type: string
+        immutable:
+          type: boolean
+        accessType:
+          type: string
+        encrypted:
+          type: boolean
+        tamperproof:
+          type: boolean
+        lastAnchored:
+          type: string
+          format: date-time
+        size:
+          type: string
+        tableColumn:
+          type: array
+          items:
+            $ref: '#/components/schemas/TableColumnDto'
+    SRCTableColumns:
+      type: object
+      properties:
+        column:
+          type: string
+        table:
+          type: string
+        namespace:
+          type: string
+        position:
+          type: integer
+          format: int32
+        nullable:
+          type: boolean
+        radix:
+          type: integer
+          format: int32
+        autoGenerate:
+          type: boolean
+        autoIncrement:
+          type: boolean
+        dataType:
+          type: string
+        defaultValue:
+          type: string
+        columnSize:
+          type: integer
+          format: int32
+        primaryKeySequence:
+          type: integer
+          format: int32
+        maxBytes:
+          type: integer
+          format: int64
+        encrypted:
+          type: boolean
+        encType:
+          type: string
+        encOption:
+          type: string
+    SRCIndex:
+      type: object
+      properties:
+        index:
+          type: string
+        table:
+          type: string
+        namespace:
+          type: string
+        nonUnique:
+          type: boolean
+        collation:
+          type: string
+        columns:
+          type: string
+        positions:
+          type: string
+        indexType:
+          type: string
+    SRCForeignKeys:
+      type: object
+      properties:
+        pkColumn:
+          type: string
+        pkTable:
+          type: string
+        pkNamespace:
+          type: string
+        fkColumn:
+          type: string
+        fkTable:
+          type: string
+        fkNamespace:
+          type: string
+        sequence:
+          type: integer
+          format: int32
+        cardinality:
+          type: string
+    SRCSchema:
+      type: object
+      properties:
+        namespace:
+          type: string
+    BlockChainDto:
+      type: object
+      properties:
+        chainId:
+          type: string
+    NamespacesDto:
+      type: object
+      properties:
+        schemaId:
+          type: string
+    PageWidgetDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetDto'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+    Tag:
+      type: object
+      properties:
+        id:
+          type: string
+        tagId:
+          type: string
+        metadata:
+          type: string
+    WidgetDto:
+      type: object
+      properties:
+        id:
+          type: string
+        widgetName:
+          type: string
+        widgetType:
+          type: string
+        ownerId:
+          type: string
+        description:
+          type: string
+        metadata:
+          type: string
+        modified:
+          type: string
+          format: date-time
+        isPublic:
+          type: boolean
+        viewId:
+          type: string
+        slug:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    PageSRCViewDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/SRCViewDto'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+    SRCViewDto:
+      type: object
+      properties:
+        id:
+          type: string
+        catalogId:
+          type: string
+        schemaId:
+          type: string
+        viewName:
+          type: string
+        ownerId:
+          type: string
+        description:
+          type: string
+        viewText:
+          type: string
+        resourceId:
+          type: string
+        isPublic:
+          type: boolean
+        parameters:
+          type: string
+        modified:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    SRCView:
+      type: object
+      properties:
+        id:
+          type: string
+        catalogId:
+          type: string
+        schemaId:
+          type: string
+        viewName:
+          type: string
+        ownerId:
+          type: string
+        description:
+          type: string
+        viewText:
+          type: string
+        resourceId:
+          type: string
+        isPublic:
+          type: boolean
+        parameters:
+          type: string
+        modified:
+          type: string
+          format: date-time
+    TagDto:
+      type: object
+      properties:
+        id:
+          type: string
+        tagId:
+          type: string
+        count:
+          type: integer
+          format: int64
+        metadata:
+          type: string
+    DashboardDto:
+      type: object
+      properties:
+        id:
+          type: string
+        dashName:
+          type: string
+        description:
+          type: string
+        descriptionTitle:
+          type: string
+        ownerId:
+          type: string
+        metadata:
+          type: string
+        modified:
+          type: string
+          format: date-time
+        isPublic:
+          type: boolean
+        slug:
+          type: string
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    PageDashboardDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/DashboardDto'
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+    DashboardWidgetDto:
+      type: object
+      properties:
+        dashboardId:
+          type: string
+        widgetId:
+          type: string
+        metadata:
+          type: string
+  securitySchemes:
+    accessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

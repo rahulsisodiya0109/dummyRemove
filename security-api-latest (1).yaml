@@ -1,0 +1,1105 @@
+openapi: 3.0.1
+info:
+  title: Security/Auth REST APIs
+  description: Enable user authentication with the platform
+  version: "1.0"
+servers:
+- url: http://localhost:9990
+  description: Generated server url
+security:
+- accessToken: []
+tags:
+- name: Subscription Provider API
+  description: Enables subscription provider management of SxT subscriptions
+- name: Subscription API
+  description: Enables user management of SxT subscriptions
+- name: Key Management API
+  description: Provides keychain management operations
+- name: Authentication / Registration API
+  description: Enables authentication workflows
+paths:
+  /v1/subscription/name:
+    put:
+      tags:
+      - Subscription API
+      summary: Set subscription name
+      description: Set the display name of the description
+      operationId: set-subscription-name
+      parameters:
+      - name: subscriptionName
+        in: query
+        description: The subscription display name
+        required: true
+        schema:
+          type: string
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+  /v1/subscription/setrole/{userId}:
+    post:
+      tags:
+      - Subscription API
+      summary: Set user role
+      description: Set a user role in your subscription
+      operationId: set-subscription-user-role
+      parameters:
+      - name: userId
+        in: path
+        description: The unique user identifier
+        required: true
+        schema:
+          type: string
+      - name: role
+        in: query
+        description: The desired role for the user to have in the subscription
+        required: true
+        schema:
+          type: string
+          enum:
+          - owner
+          - admin
+          - member
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+  /v1/subscription/remove/{userId}:
+    post:
+      tags:
+      - Subscription API
+      summary: Remove a user
+      description: Remove a user from your subscription
+      operationId: remove-subscription-user
+      parameters:
+      - name: userId
+        in: path
+        description: The unique user identifier
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+  /v1/subscription/invite:
+    post:
+      tags:
+      - Subscription API
+      summary: Create subscription invite
+      description: Create a new subscription invite with the specified role
+      operationId: create-subscription-invite
+      parameters:
+      - name: role
+        in: query
+        description: The desired role for the user to have in the subscription
+        required: true
+        schema:
+          type: string
+          enum:
+          - owner
+          - admin
+          - member
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                type: string
+  /v1/subscription/invite/{joinCode}:
+    post:
+      tags:
+      - Subscription API
+      summary: Join subscription
+      description: Join a subscription given the invite code
+      operationId: join-subscription-invite
+      parameters:
+      - name: joinCode
+        in: path
+        description: The unique code to join a given subscription
+        required: true
+        schema:
+          type: string
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  /v1/mgmt/subscription/suspend:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Suspend subscription
+      description: Suspend an active subscription due to failed payment
+      operationId: manage-subscription-suspend
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionReferenceRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+      security: []
+  /v1/mgmt/subscription/retrieve:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Retrieve subscription info
+      description: Retrieve the subscription information
+      operationId: manage-subscription-retrieve
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionReferenceRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubscriptionProviderInfoResponse'
+      security: []
+  /v1/mgmt/subscription/renew:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Renew subscription
+      description: Renew an active subscription by confirming a payment
+      operationId: manage-subscription-renew
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRenewRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+      security: []
+  /v1/mgmt/subscription/reinstate:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Reinstate subscription
+      description: Reinstate a suspended subscription
+      operationId: manage-subscription-reinstate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionReferenceRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+      security: []
+  /v1/mgmt/subscription/create:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Create a new subscription
+      description: Create a new subscription
+      operationId: manage-subscription-create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionCreateRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "201":
+          description: Created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/NewSubscriptionResponse'
+      security: []
+  /v1/mgmt/subscription/cancel:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Cancel a subscription
+      description: Cancel an active subscription
+      operationId: manage-subscription-cancel
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionReferenceRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+      security: []
+  /v1/mgmt/subscription/alter:
+    post:
+      tags:
+      - Subscription Provider API
+      summary: Alter subscription info
+      description: Alter subscription information
+      operationId: manage-subscription-alter
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionAlterRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+      security: []
+  /v1/auth/token:
+    post:
+      tags:
+      - Authentication / Registration API
+      summary: Token Request
+      description: Initiate a new authentication section by proving identity via `signature`
+        to generate a new `accessToken` and `refreshToken`
+      operationId: token-request
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+        required: true
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+      security: []
+  /v1/auth/token-internal:
+    post:
+      tags:
+      - Authentication / Registration API
+      operationId: getInternalToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InternalTokenRequest'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /v1/auth/refresh:
+    post:
+      tags:
+      - Authentication / Registration API
+      summary: Token Refresh
+      description: Refresh an existing authenticated session by providing a valid
+        `refreshToken` to generate a new `accessToken` and `refreshToken`
+      operationId: token-refresh
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+  /v1/auth/logout:
+    post:
+      tags:
+      - Authentication / Registration API
+      summary: Logout
+      description: End an authenticated session
+      operationId: logout
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+  /v1/auth/keys:
+    get:
+      tags:
+      - Key Management API
+      summary: Get current keychain
+      description: Retrieve public keys available for user authentication
+      operationId: get-current-keychain
+      responses:
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/KeychainResponse'
+    post:
+      tags:
+      - Key Management API
+      summary: Add key to keychain
+      description: Add a new public key to your keychain for authentication
+      operationId: add-key-to-keychain
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddKeyRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "204":
+          description: No Content
+  /v1/auth/keys/code:
+    post:
+      tags:
+      - Key Management API
+      summary: Get public key challenge
+      description: Request a challenge for adding a new public key
+      operationId: get-public-key-challenge
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AuthCodeResponse'
+  /v1/auth/code:
+    post:
+      tags:
+      - Authentication / Registration API
+      summary: Authentication Code
+      description: Request a temporary authentication challenge for the given user.
+        A random `authCode` will be generated and tied to the provided `userId` for
+        a short period of time
+      operationId: authentication-code
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthCodeRequest'
+        required: true
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/AuthCodeResponse'
+      security: []
+  /v1/subscription:
+    get:
+      tags:
+      - Subscription API
+      summary: Get subscription information
+      description: Retreive subscription information
+      operationId: get-subscription-info
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubscriptionUserInfoResponse'
+  /v1/subscription/users:
+    get:
+      tags:
+      - Subscription API
+      summary: Get subscription users
+      description: Retrieve users tied to your subscription
+      operationId: get-subscription-users
+      responses:
+        "404":
+          description: Not Found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/SubscriptionUsersResponse'
+  /v1/auth/validtoken:
+    get:
+      tags:
+      - Authentication / Registration API
+      summary: Validate token
+      description: Perform simple token validation and return claim metadata on success
+      operationId: validate-token
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TokenMetadataResponse'
+  /v1/auth/idexists/{id}:
+    get:
+      tags:
+      - Authentication / Registration API
+      summary: User Identifier Check
+      description: "Checks if a given user identifier (`userId`) is in use across\
+        \ the platform, facilitating registration process. Returns `true` if the userId\
+        \ is in use"
+      operationId: user-identifier-check
+      parameters:
+      - name: id
+        in: path
+        description: The user identifier to check
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: boolean
+      security: []
+  /krakend-config:
+    get:
+      tags:
+      - kraken-config-controller
+      operationId: getConfig
+      responses:
+        "200":
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/KrakendConfigResponse'
+components:
+  schemas:
+    ErrorResponse:
+      required:
+      - detail
+      - instance
+      - title
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Defines the error type
+        title:
+          type: string
+          description: A short summary of the problem
+        detail:
+          type: string
+          description: A detailed explanation of the problem
+        instance:
+          type: string
+          description: A URI reference identifying where the problem ocurred
+    TokenResponse:
+      type: object
+      properties:
+        accessToken:
+          type: string
+        refreshToken:
+          type: string
+        accessTokenExpires:
+          type: integer
+          format: int64
+        refreshTokenExpires:
+          type: integer
+          format: int64
+    SubscriptionReferenceRequest:
+      required:
+      - providerId
+      - signature
+      - subscriptionId
+      type: object
+      properties:
+        providerId:
+          type: string
+        signature:
+          type: string
+        subscriptionId:
+          type: string
+    SubscriptionProviderInfoResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+        state:
+          type: string
+          enum:
+          - active
+          - suspended
+          - canceled
+        planName:
+          type: string
+        lastPayment:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    SubscriptionRenewRequest:
+      required:
+      - currency
+      - providerId
+      - signature
+      - subscriptionId
+      - timestamp
+      type: object
+      properties:
+        providerId:
+          type: string
+        signature:
+          type: string
+        subscriptionId:
+          type: string
+        amount:
+          minimum: 0.0
+          exclusiveMinimum: true
+          type: number
+        currency:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+    SubscriptionCreateRequest:
+      required:
+      - currency
+      - planName
+      - providerId
+      - signature
+      - timestamp
+      type: object
+      properties:
+        providerId:
+          type: string
+        signature:
+          type: string
+        planName:
+          type: string
+        accessToken:
+          type: string
+        amount:
+          minimum: 0.0
+          exclusiveMinimum: true
+          type: number
+        currency:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+    NewSubscriptionResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+        joinCode:
+          type: string
+    SubscriptionAlterRequest:
+      required:
+      - providerId
+      - signature
+      - subscriptionId
+      type: object
+      properties:
+        providerId:
+          type: string
+        signature:
+          type: string
+        subscriptionId:
+          type: string
+        planName:
+          type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: object
+    TokenRequest:
+      required:
+      - authCode
+      - key
+      - signature
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        authCode:
+          type: string
+        signature:
+          type: string
+        key:
+          type: string
+        scheme:
+          type: string
+    InternalTokenRequest:
+      required:
+      - claimType
+      - claimValue
+      type: object
+      properties:
+        claimType:
+          type: string
+          enum:
+          - USER
+          - SMART_CONTRACT
+        claimValue:
+          type: string
+    AddKeyRequest:
+      required:
+      - authCode
+      - key
+      - signature
+      type: object
+      properties:
+        authCode:
+          type: string
+        signature:
+          type: string
+        key:
+          type: string
+        scheme:
+          type: string
+    AuthCodeResponse:
+      type: object
+      properties:
+        authCode:
+          type: string
+    AuthCodeRequest:
+      required:
+      - userId
+      type: object
+      properties:
+        userId:
+          type: string
+        prefix:
+          type: string
+        joinCode:
+          type: string
+    SubscriptionUserInfoResponse:
+      type: object
+      properties:
+        subscriptionId:
+          type: string
+        state:
+          type: string
+          enum:
+          - active
+          - suspended
+          - canceled
+        planName:
+          type: string
+        lastPayment:
+          type: string
+        subscriptionName:
+          type: string
+        providerName:
+          type: string
+    SubscriptionUsersResponse:
+      type: object
+      properties:
+        roleMap:
+          type: object
+          additionalProperties:
+            type: string
+            enum:
+            - owner
+            - admin
+            - member
+    TokenMetadataResponse:
+      type: object
+      properties:
+        userId:
+          type: string
+        subscriptionId:
+          type: string
+        restricted:
+          type: boolean
+        trial:
+          type: boolean
+    KeyData:
+      type: object
+      properties:
+        key:
+          type: string
+        scheme:
+          type: string
+    KeychainResponse:
+      type: object
+      properties:
+        keychain:
+          type: array
+          items:
+            $ref: '#/components/schemas/KeyData'
+    Block:
+      type: object
+      properties:
+        bt:
+          type: string
+        incrBy:
+          type: integer
+          format: int32
+        capacity:
+          type: integer
+          format: int64
+        durationValue:
+          type: integer
+          format: int64
+        durationUnits:
+          type: string
+    KrakendConfigResponse:
+      type: object
+      properties:
+        trialLimit:
+          type: integer
+          format: int32
+        restrictedApis:
+          type: array
+          items:
+            type: string
+        subscriptionBlocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubscriptionBlock'
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
+    SubscriptionBlock:
+      type: object
+      properties:
+        bt:
+          type: string
+        subscriptionId:
+          type: string
+  securitySchemes:
+    accessToken:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

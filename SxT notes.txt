@@ -1,0 +1,25 @@
+SxT dApp API
+date 18 April 2023
+	Ask for swagger from Rajesh
+	Have daily syncup with Seema to align on project need
+	Proactiveness
+	Documentation
+	Domain knowledge
+	
+	check if 1.5milisecond should be response time
+	
+sxt dataware house
+	index chain
+		from genesis block -> 
+		
+	Nilesh Gangrade**	
+	coordinate with Nilesh Sharma, Nitin Gaur- ask for swagger, and collection
+	
+	rajesh ask to understand collection
+	
+	
+
+Biscuit authorization mechanism for DDl,DML and DQL
+
+
+add BA thing in KRA
